@@ -5,8 +5,7 @@ from google import genai
 
 app = Flask(__name__)
 
-# Initialize Gemini Client
-# Ensure GEMINI_API_KEY is set in your environment
+# Initialize Gemini Client using GEMINI_API_KEY
 client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
 @app.route('/chat', methods=['POST'])
@@ -17,7 +16,6 @@ def chat():
 
     user_prompt = data["prompt"]
 
-    # 1. Fetch search context
     search_context = ""
     try:
         with DDGS() as ddgs:
@@ -27,23 +25,14 @@ def chat():
     except Exception:
         search_context = "No live search context available."
 
-    # 2. Construct the prompt for Gemini
-    full_prompt = f"""
-    You are a helpful assistant. Use the following live web data to answer the user's question.
-    
-    Live Web Data:
-    {search_context}
-    
-    User Question: {user_prompt}
-    """
-
-    # 3. Call Gemini API
     try:
+        full_query = f"Live Web Data:\n{search_context}\n\nQuestion: {user_prompt}"
+        
         response = client.models.generate_content(
             model="gemini-2.0-flash",
-            contents=full_prompt,
+            contents=full_query,
             config={
-                "system_instruction": "Provide concise, direct answers based on provided search context.",
+                "system_instruction": "You are a helpful assistant. Provide concise, direct answers using the provided Live Web Data.",
                 "max_output_tokens": 300,
             }
         )
