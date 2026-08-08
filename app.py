@@ -5,7 +5,7 @@ from google import genai
 
 app = Flask(__name__)
 
-# Initialize Gemini Client using GEMINI_API_KEY
+# Initialize Gemini Client
 client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
 @app.route('/chat', methods=['POST'])
@@ -29,7 +29,7 @@ def chat():
         full_query = f"Live Web Data:\n{search_context}\n\nQuestion: {user_prompt}"
         
         response = client.models.generate_content(
-            model="gemini-2.0-flash",
+            model="gemini-1.5-flash",
             contents=full_query,
             config={
                 "system_instruction": "You are a helpful assistant. Provide concise, direct answers using the provided Live Web Data.",
