@@ -1,0 +1,4 @@
+flask
+duckduckgo_search
+google-genai
+gunicorn
